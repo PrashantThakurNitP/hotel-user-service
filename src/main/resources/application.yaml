@@ -1,0 +1,15 @@
+spring:
+  data:
+    mongodb:
+      uri: ${MONGODB_URL}
+  application:
+    name: user-service
+
+jwt:
+  secret: ${JWT_SECRET}
+  expiration: 3600000
+
+
+server:
+  port: 8081
+
