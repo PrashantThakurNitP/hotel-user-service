@@ -29,14 +29,15 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         return http
-                .csrf(csrf -> csrf.disable())
-                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .csrf(csrf -> csrf.disable()) //  Disable CSRF for stateless REST APIs
+                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)) //  Use stateless session (JWT)
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/users/register", "/api/users/login", "/api/users/logout").permitAll()
-                        .anyRequest().authenticated()
+                        .requestMatchers("/api/profile/**").authenticated() //  Profile APIs require authentication
+                        .requestMatchers("/api/users/register", "/api/users/login", "/api/users/logout").permitAll() //  Open endpoints
+                        .anyRequest().authenticated() //  All other endpoints secured
                 )
-                .authenticationProvider(authenticationProvider())
-                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
+                .authenticationProvider(authenticationProvider()) //  custom authentication provider
+                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class) // JWT filter
                 .build();
     }
 
