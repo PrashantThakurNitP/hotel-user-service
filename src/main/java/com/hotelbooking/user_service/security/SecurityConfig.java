@@ -23,7 +23,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @RequiredArgsConstructor
 public class SecurityConfig {
 
-    private final JwtAuthenticationFilter jwtAuthenticationFilter;
+    private final AuthenticationFilter jwtAuthenticationFilter;
     private final CustomUserDetailsService customUserDetailsService;
 
     @Bean
@@ -32,7 +32,7 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/users/register", "/api/users/login").permitAll()
+                        .requestMatchers("/api/users/register", "/api/users/login", "/api/users/logout").permitAll()
                         .anyRequest().authenticated()
                 )
                 .authenticationProvider(authenticationProvider())

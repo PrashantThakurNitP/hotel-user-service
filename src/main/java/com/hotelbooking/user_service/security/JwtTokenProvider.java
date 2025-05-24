@@ -1,12 +1,18 @@
 package com.hotelbooking.user_service.security;
 
 import com.hotelbooking.user_service.model.User;
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.security.Keys;
+import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+import javax.crypto.SecretKey;
 import java.util.Date;
+import java.util.UUID;
 
 @Component
 public class JwtTokenProvider {
@@ -17,6 +23,14 @@ public class JwtTokenProvider {
     @Value("${jwt.expiration}")
     private long jwtExpirationMs;
 
+    private  SecretKey key;
+
+    @PostConstruct
+    public void init() {
+        key = Keys.hmacShaKeyFor(jwtSecret.getBytes()); // use the static key from properties
+    }
+
+
     public String generateToken(User user) {
         Date now = new Date();
         Date expiry = new Date(now.getTime() + jwtExpirationMs);
@@ -24,22 +38,43 @@ public class JwtTokenProvider {
         return Jwts.builder()
                 .setSubject(user.getEmail())
                 .claim("role", user.getRole())
+                .setId(UUID.randomUUID().toString())
                 .setIssuedAt(now)
                 .setExpiration(expiry)
-                .signWith(SignatureAlgorithm.HS512, jwtSecret)
+                .signWith(key)
                 .compact();
     }
 
-    public String getEmailFromToken(String token) {
-        return Jwts.parser().setSigningKey(jwtSecret).parseClaimsJws(token).getBody().getSubject();
-    }
+
+
+
 
     public boolean validateToken(String token) {
         try {
-            Jwts.parser().setSigningKey(jwtSecret).parseClaimsJws(token);
+            Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token);
             return true;
-        } catch (Exception e) {
+        } catch (JwtException | IllegalArgumentException e) {
             return false;
         }
+    }
+
+    public String getEmailFromToken(String token) {
+        return extractAllClaims(token).getSubject();
+    }
+
+    public Claims extractAllClaims(String token) {
+        return Jwts.parserBuilder()
+                .setSigningKey(key)
+                .build()
+                .parseClaimsJws(token)
+                .getBody();
+    }
+
+    public boolean isTokenExpired(String token) {
+        return extractAllClaims(token).getExpiration().before(new Date());
+    }
+
+    public String extractJti(String token) {
+        return extractAllClaims(token).getId();
     }
 }
