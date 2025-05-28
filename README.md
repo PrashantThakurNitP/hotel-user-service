@@ -1,6 +1,3 @@
-### 📁 `user-service/README.md`
-
-```markdown
 # User Service
 
 ## 👤 Overview
