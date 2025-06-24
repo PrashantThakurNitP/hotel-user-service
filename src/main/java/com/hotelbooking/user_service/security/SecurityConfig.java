@@ -29,18 +29,25 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         return http
-                .csrf(csrf -> csrf.disable()) //  Disable CSRF for stateless REST APIs
-                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)) //  Use stateless session (JWT)
+                .csrf(csrf -> csrf.disable())  //  Disable CSRF for stateless REST APIs
+                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
+                        .requestMatchers(
+                                "/api/users/register",
+                                "/api/users/login",
+                                "/api/users/logout",
+                                "/v3/api-docs/**",
+                                "/v3/api-docs/public-apis",
+                                "/swagger-ui/**",
+                                "/swagger-ui.html"
+                        ).permitAll() //  Open endpoints
                         .requestMatchers("/api/profile/**").authenticated() //  Profile APIs require authentication
-                        .requestMatchers("/api/users/register", "/api/users/login", "/api/users/logout").permitAll() //  Open endpoints
-                        .anyRequest().authenticated() //  All other endpoints secured
+                        .anyRequest().authenticated()  //  All other endpoints secured
                 )
                 .authenticationProvider(authenticationProvider()) //  custom authentication provider
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class) // JWT filter
                 .build();
     }
-
     @Bean
     public AuthenticationProvider authenticationProvider() {
         DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
