@@ -23,10 +23,7 @@ public class SwaggerConfig {
                         .contact(new Contact()
                                 .name("Prashant Thakur")
                                 .email("prashant09.thakur@gmail.com")
-                                .url("https://github.com/PrashantThakurNitP"))
-                        .license(new License()
-                                .name("Apache 2.0")
-                                .url("https://www.apache.org/licenses/LICENSE-2.0")));
+                                .url("https://github.com/PrashantThakurNitP")));
     }
 
     @Bean
