@@ -50,7 +50,7 @@ The **User Service** is a core component of the Hotel Booking System responsible
 ## 📘 API Documentation
 
 Swagger UI is available at:  
-**`http://localhost:8080/swagger-ui.html`**
+**`http://localhost:8081/swagger-ui.html`**
 
 ### Sample API Endpoints
 
