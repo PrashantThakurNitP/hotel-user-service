@@ -11,6 +11,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -24,10 +25,10 @@ public class AuthService {
             throw new RuntimeException("Email already in use");
         }
         User user = User.builder()
-                .username(request.getUsername())
+                .id(UUID.randomUUID())
                 .email(request.getEmail())
                 .password(passwordEncoder.encode(request.getPassword()))
-                .role("USER")
+                .role(request.getRole())
                 .createdAt(LocalDateTime.now())
                 .build();
         userRepository.save(user);

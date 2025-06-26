@@ -6,32 +6,37 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.time.LocalDateTime;
+import java.util.UUID;
 
-@Document(collection = "users")
+@Document(collection = "users") // since no sql
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
 public class User {
+
     @Id
-    private String id;
-    private String username;
+    private UUID id;
+
+    @Indexed(unique = true)
     private String email;
+
     @JsonIgnore
     private String password; // Hashed
-    private String role;
+    // skip a field when serializing or deserializing
+
+    private UserRole role;  // e.g., USER, HOTEL_OWNER, ADMIN
+
     private LocalDateTime createdAt;
 
     private String fullName;
-    private String phone;
-    private String address;
-    /*
-    The @JsonIgnore annotation is part of the Jackson library, which is used by Spring Boot to handle JSON serialization and deserialization.
 
-🔍   What @JsonIgnore Does:
-    @JsonIgnore tells Jackson to skip a field when serializing or deserializing an object to/from JSON.
-     */
+    private String phone;
+
+    private String address;
+
 }
